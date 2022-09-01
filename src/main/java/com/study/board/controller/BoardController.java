@@ -1,5 +1,6 @@
 package com.study.board.controller;
 
+import com.study.board.dto.BoardDto;
 import com.study.board.entity.Board;
 import com.study.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -23,28 +21,32 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
-    @GetMapping("/board/write") //localhost:8080
-    public String boardWriteForm(){
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
+
+    @GetMapping("/board/writeform") //localhost:8080
+    public String getBoardWriteForm(){
         return "boardwrite";
     }
 
-    @PostMapping("/board/writepro")
-    public String boardWritePro(Board board, Model model, MultipartFile file) throws Exception {
+    @PostMapping("/board/write")
+    public String boardWrite(BoardDto boardDto, Model model, MultipartFile file) throws Exception {
 
-        boardService.write(board, file);
+        boardService.savePost(boardDto, file);
 
         model.addAttribute("message", "글 작성이 완료되었습니다.");
-        model.addAttribute("searchUrl", "/board/list");
+        model.addAttribute("searchUrl", "/board");
 
         return "message";
     }
 
-    @GetMapping("/board/list")
-    public String boardList(Model model,
+    @GetMapping("/board")
+    public String getBoardList(Model model,
                             @PageableDefault(page = 0, size = 10, sort ="id", direction = Sort.Direction.DESC) Pageable pageable,
                             String searchKeyword){
 
-        Page<Board> list = null;
+        Page<BoardDto> list = null;
 
         if (searchKeyword == null){
             list = boardService.boardList(pageable);
@@ -52,9 +54,10 @@ public class BoardController {
             list = boardService.boardSearchList(searchKeyword, pageable);
         }
 
+        // 검색 결과가 없는 경우
         if (list.getTotalElements() == 0){
             model.addAttribute("message", "검색 결과가 없습니다.");
-            model.addAttribute("searchUrl", "/board/list");
+            model.addAttribute("searchUrl", "/board");
 
             return "message";
         }
@@ -73,9 +76,31 @@ public class BoardController {
 
     @GetMapping("/board/view") // localhost:8080/board/view?id=1 get방식으로 인자 전달.
     public String boardView(Model model, Integer id){
+        BoardDto boardDto = boardService.boardView(id);
 
-        model.addAttribute("board", boardService.boardView(id));
+        model.addAttribute("boardDto", boardDto);
         return "boardview";
+    }
+
+
+    @GetMapping("/board/modify/{id}")
+    public String boardModify(@PathVariable("id") Integer id, Model model) {
+
+        BoardDto boardDto = boardService.boardView(id);
+        model.addAttribute("boardDto", boardDto);
+
+        return "boardmodify";
+    }
+
+    @PutMapping("/board/update/{id}")
+    public String boardUpdate(@PathVariable("id") Integer id, BoardDto boardDto, Model model, MultipartFile file) throws Exception {
+
+        boardService.savePost(boardDto, file);
+
+        model.addAttribute("message", "글 수정이 완료되었습니다.");
+        model.addAttribute("searchUrl", "/board");
+
+        return "message";
     }
 
     @GetMapping("/board/delete")
@@ -85,29 +110,5 @@ public class BoardController {
 
         return "redirect:/board/list";
     }
-
-    @GetMapping("/board/modify/{id}")
-    public String boardModify(@PathVariable("id") Integer id,
-                              Model model) {
-
-        model.addAttribute("board", boardService.boardView(id));
-
-        return "boardmodify";
-    }
-
-    // 기존의 내용을 가져와서 새로운 내용으로 덮어 씌운다 -> 원래는 이렇게 하면 안됨 JPA의 변경 감지 학습!
-    @PostMapping("/board/update/{id}")
-    public String boardUpdate(@PathVariable("id") Integer id, Board board, Model model, MultipartFile file) throws Exception {
-
-        Board boardTemp = boardService.boardView(id);
-        boardTemp.setTitle(board.getTitle());
-        boardTemp.setContent(board.getContent());
-
-        boardService.write(boardTemp, file);
-
-        model.addAttribute("message", "글 작성이 완료되었습니다.");
-        model.addAttribute("searchUrl", "/board/list");
-
-        return "message";
-    }
 }
+
