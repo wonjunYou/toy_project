@@ -1,6 +1,8 @@
 package com.study.board.entity;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,4 +25,17 @@ public class Board {
     private String filename;
 
     private String filepath;
+
+    @Builder
+    public Board(Integer id, String title, String content, String filename, String filepath) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.filename = filename;
+        this.filepath = filepath;
+    }
+
+    public Board() {
+
+    }
 }
