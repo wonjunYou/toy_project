@@ -11,10 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.List;
 import java.util.UUID;
 
-//Service -> Controller에서 이용함.
 @Service
 public class BoardService {
 
@@ -85,6 +83,6 @@ public class BoardService {
     // 특정 게시글 삭제
     public void boardDelete(Integer id) {
 
-        boardRepository.deleteById(id); // id값을 가진 글을 삭제.
+        boardRepository.deleteById(id);
     }
 }

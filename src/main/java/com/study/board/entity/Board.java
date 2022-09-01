@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-//@Entity : DB에 있는 테이블을 의미한다.
 @Entity
 @Data
 public class Board {

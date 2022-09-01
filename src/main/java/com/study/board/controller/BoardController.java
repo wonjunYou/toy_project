@@ -92,7 +92,6 @@ public class BoardController {
         return "boardmodify";
     }
 
-    // 기존의 내용을 가져와서 새로운 내용으로 덮어 씌운다 -> 원래는 이렇게 하면 안됨 JPA의 변경 감지 학습!
     @PutMapping("/board/update/{id}")
     public String boardUpdate(@PathVariable("id") Integer id, BoardDto boardDto, Model model, MultipartFile file) throws Exception {
 
