@@ -11,6 +11,16 @@
         margin : 0 auto;
         margin-top : 40px;
     }
+
+    .time-column{
+        padding-left : 100px;
+    }
+
+    tr {
+        border-bottom : 1px solid black;
+        padding-bottom : 3px;
+    }
+
 </style>
 
 <body>
@@ -20,13 +30,17 @@
                 <tr>
                     <th>글번호</th>
                     <th>제목</th>
+                    <th class="time-column">등록 시간</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="board : ${list}">
-                    <td th:text="${board.id}">1</td>
+                    <td th:text="${board.id}" style="text-align: center">1</td>
                     <td>
                         <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"></a>
+                    </td>
+                    <td class="time-column">
+                        <span th:text="${#temporals.format(board.updatedTime, 'yy-mm-dd HH:mm')}"></span>
                     </td>
                 </tr>
             </tbody>

@@ -36,7 +36,18 @@ public class BoardController {
         boardService.savePost(boardDto, file);
 
         model.addAttribute("message", "글 작성이 완료되었습니다.");
-        model.addAttribute("searchUrl", "/board");
+        model.addAttribute("redirectUrl", "/board");
+
+        return "message";
+    }
+
+    @PutMapping("/board/modify/{id}")
+    public String boardUpdate(@PathVariable("id") Integer id, BoardDto boardDto, Model model, MultipartFile file) throws Exception {
+
+        boardService.savePost(boardDto, file);
+
+        model.addAttribute("message", "글 수정이 완료되었습니다.");
+        model.addAttribute("redirectUrl", "/board");
 
         return "message";
     }
@@ -57,7 +68,7 @@ public class BoardController {
         // 검색 결과가 없는 경우
         if (list.getTotalElements() == 0){
             model.addAttribute("message", "검색 결과가 없습니다.");
-            model.addAttribute("searchUrl", "/board");
+            model.addAttribute("redirectUrl", "/board");
 
             return "message";
         }
@@ -92,23 +103,14 @@ public class BoardController {
         return "boardmodify";
     }
 
-    @PutMapping("/board/update/{id}")
-    public String boardUpdate(@PathVariable("id") Integer id, BoardDto boardDto, Model model, MultipartFile file) throws Exception {
 
-        boardService.savePost(boardDto, file);
-
-        model.addAttribute("message", "글 수정이 완료되었습니다.");
-        model.addAttribute("searchUrl", "/board");
-
-        return "message";
-    }
 
     @GetMapping("/board/delete")
     public String boardDelete(Integer id){
 
         boardService.boardDelete(id);
 
-        return "redirect:/board/list";
+        return "redirect:/board";
     }
 }
 
