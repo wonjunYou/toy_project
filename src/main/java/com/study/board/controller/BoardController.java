@@ -1,29 +1,43 @@
 package com.study.board.controller;
 
 import com.study.board.dto.BoardDto;
-import com.study.board.entity.Board;
+import com.study.board.entity.BoardEntity;
+import com.study.board.entity.FileEntity;
+import com.study.board.repository.FileRepository;
 import com.study.board.service.BoardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.study.board.service.FileService;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+
+import java.util.Collections;
+import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class BoardController {
+    private final BoardService boardService;
 
-    @Autowired
-    private BoardService boardService;
+    private final FileService fileService;
 
-    public BoardController(BoardService boardService) {
-        this.boardService = boardService;
-    }
+    private final FileRepository fileRepository;
 
     @GetMapping("/board/writeform") //localhost:8080
     public String getBoardWriteForm(){
@@ -31,9 +45,16 @@ public class BoardController {
     }
 
     @PostMapping("/board/write")
-    public String boardWrite(BoardDto boardDto, Model model, MultipartFile file) throws Exception {
+    public String boardWrite(BoardDto boardDto, Model model,
+                             @RequestParam("files") List<MultipartFile> files, BoardEntity boardEntity) throws Exception {
 
-        boardService.savePost(boardDto, file);
+        if (files.isEmpty()){
+            boardService.savePost(boardDto);
+        } else {
+            for (MultipartFile multipartFile : files) {
+                fileService.saveFile(multipartFile, boardEntity);
+            }
+        }
 
         model.addAttribute("message", "글 작성이 완료되었습니다.");
         model.addAttribute("redirectUrl", "/board");
@@ -41,23 +62,12 @@ public class BoardController {
         return "message";
     }
 
-    @PutMapping("/board/modify/{id}")
-    public String boardUpdate(@PathVariable("id") Integer id, BoardDto boardDto, Model model, MultipartFile file) throws Exception {
-
-        boardService.savePost(boardDto, file);
-
-        model.addAttribute("message", "글 수정이 완료되었습니다.");
-        model.addAttribute("redirectUrl", "/board");
-
-        return "message";
-    }
 
     @GetMapping("/board")
-    public String getBoardList(Model model,
-                            @PageableDefault(page = 0, size = 10, sort ="id", direction = Sort.Direction.DESC) Pageable pageable,
-                            String searchKeyword){
+    public String getBoardList(Model model, @PageableDefault(page = 0, size = 10, sort ="id", direction = Sort.Direction.DESC)
+                               Pageable pageable, String searchKeyword){
 
-        Page<BoardDto> list = null;
+        Page<BoardDto> list;
 
         if (searchKeyword == null){
             list = boardService.boardList(pageable);
@@ -89,10 +99,12 @@ public class BoardController {
     public String boardView(Model model, Integer id){
         BoardDto boardDto = boardService.boardView(id);
 
+        List<FileEntity> files = fileRepository.findAll();
+
         model.addAttribute("boardDto", boardDto);
+        model.addAttribute("all", files);
         return "boardview";
     }
-
 
     @GetMapping("/board/modify/{id}")
     public String boardModify(@PathVariable("id") Integer id, Model model) {
@@ -103,7 +115,21 @@ public class BoardController {
         return "boardmodify";
     }
 
+    @PutMapping("/board/modify/{id}")
+    public String boardUpdate(BoardDto boardDto,
+                              @RequestParam("files") List<MultipartFile> files, BoardEntity boardEntity) throws Exception{
 
+        boardService.savePost(boardDto);
+
+        for (MultipartFile multipartFile : files) {
+            fileService.saveFile(multipartFile, boardEntity);
+        }
+
+        //model.addAttribute("message", "글 수정이 완료되었습니다.");
+        //model.addAttribute("redirectUrl", "/board");
+
+        return "redirect:/board";
+    }
 
     @GetMapping("/board/delete")
     public String boardDelete(Integer id){
@@ -111,6 +137,19 @@ public class BoardController {
         boardService.boardDelete(id);
 
         return "redirect:/board";
+    }
+
+    @GetMapping("/attach/{id}")
+    public ResponseEntity<Resource> downloadAttach(@PathVariable Integer id) throws MalformedURLException {
+        FileEntity file = fileRepository.findById(id).orElse(null);
+
+        UrlResource resource = new UrlResource("file:" + file.getUplodeFilepath());
+        String encodedFilename = UriUtils.encode(file.getOriginFilename(), StandardCharsets.UTF_8);
+
+        // 파일 다운로드 대화상자가 뜨도록 헤더 설정
+        String contentDisposition = "attachment; filename=\"" + encodedFilename + "\"";
+
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition).body(resource);
     }
 }
 

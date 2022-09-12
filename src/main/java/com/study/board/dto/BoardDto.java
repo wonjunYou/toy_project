@@ -1,11 +1,14 @@
 package com.study.board.dto;
 
-import com.study.board.entity.Board;
+import com.study.board.entity.BoardEntity;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,8 +25,6 @@ public class BoardDto {
 
     @Column(nullable = false)
     private String content;
-    private String filename;
-    private String filepath;
 
     private LocalDateTime createdTime;
 
@@ -31,41 +32,36 @@ public class BoardDto {
 
 
     /* DTO -> Entity */
-    public Board toEntity(){
-        Board board = Board.builder()
+    public BoardEntity toEntity(){
+        BoardEntity boardEntity = BoardEntity.builder()
                 .id(id)
                 .title(title)
                 .content(content)
-                .filename(filename)
-                .filepath(filepath)
                 .createdTime(createdTime)
                 .updatedTime(updatedTime)
                 .build();
 
-        return board;
+        return boardEntity;
     }
 
     @Builder
-    public BoardDto(Integer id, String title, String content, String filename, String filepath,
+    public BoardDto(Integer id, String title, String content,
                     LocalDateTime createdTime, LocalDateTime updatedTime){
         this.id = id;
         this.title = title;
         this.content = content;
-        this.filename = filename;
-        this.filepath = filepath;
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
     }
 
+
     @Builder
-    public BoardDto(Board board) {
-        this.id = board.getId();
-        this.title = board.getTitle();
-        this.content = board.getContent();
-        this.filename = board.getFilename();
-        this.filepath = board.getFilepath();
-        this.createdTime = board.getCreatedTime();
-        this.updatedTime = board.getUpdatedTime();
+    public BoardDto(BoardEntity boardEntity) {
+        this.id = boardEntity.getId();
+        this.title = boardEntity.getTitle();
+        this.content = boardEntity.getContent();
+        this.createdTime = boardEntity.getCreatedTime();
+        this.updatedTime = boardEntity.getUpdatedTime();
     }
 
 }
