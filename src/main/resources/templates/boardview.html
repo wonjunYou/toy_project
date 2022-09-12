@@ -6,11 +6,16 @@
 </head>
 <body>
 
-<h1 th:text="${boardDto.title}">제목입니다.</h1>
-<p th:text="${boardDto.content}">내용이 들어갈 부분입니다.</p>
-<a th:href="@{${boardDto.filepath}}">다운받기</a>
-<a th:href="@{/board/modify/{id}(id = ${boardDto.id})}">수정</a>
-<a th:href="@{/board/delete(id=${boardDto.id})}">글 삭제</a>
+    <h1 th:text="${boardDto.title}">제목입니다.</h1>
+    <p th:text="${boardDto.content}">내용이 들어갈 부분입니다.</p>
+
+    <h3>첨부 파일</h3>
+    <div th:each="file : ${all}">
+        <a th:href="|/attach/${file.file_id}|" th:text="${file.originFilename}"></a>
+    </div>
+
+    <a th:href="@{/board/modify/{id}(id = ${boardDto.id})}">수정</a>
+    <a th:href="@{/board/delete(id=${boardDto.id})}">글 삭제</a>
 
 </body>
 </html>

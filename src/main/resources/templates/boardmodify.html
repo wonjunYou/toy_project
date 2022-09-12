@@ -30,6 +30,8 @@
 <body>
 <div class="layout">
   <form th:action="@{/board/modify/{id}(id = ${boardDto.id})}" method="post">
+    <input type="hidden" name="_method" value="put" />
+    <input type="hidden" name="id" th:value="${boardDto.id}" />
     <input name="title" type="text" th:value="${boardDto.title}">
     <textarea name="content" th:text="${boardDto.content}"></textarea>
     <input type="file" name="file">

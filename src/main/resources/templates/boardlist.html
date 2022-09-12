@@ -40,7 +40,7 @@
                         <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"></a>
                     </td>
                     <td class="time-column">
-                        <span th:text="${#temporals.format(board.updatedTime, 'yy-mm-dd HH:mm')}"></span>
+                        <span th:text="${#temporals.format(board.updatedTime, 'yy-MM-dd HH:mm')}"></span>
                     </td>
                 </tr>
             </tbody>

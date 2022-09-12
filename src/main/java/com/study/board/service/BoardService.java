@@ -1,8 +1,9 @@
 package com.study.board.service;
 
 import com.study.board.dto.BoardDto;
-import com.study.board.entity.Board;
+import com.study.board.entity.BoardEntity;
 import com.study.board.repository.BoardRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,42 +15,15 @@ import java.io.File;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class BoardService {
 
-    @Autowired // DI
-    private BoardRepository boardRepository;
-
-    public BoardService(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
-    }
-
-    //글 작성
+    private final BoardRepository boardRepository;
+        //글 작성
     @Transactional
-    public void savePost(BoardDto boardDto, MultipartFile file) throws Exception {
+    public void savePost(BoardDto boardDto) throws Exception {
 
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files"; // 프로젝트의 경로를 담아준다.
-
-        UUID uuid = UUID.randomUUID(); //랜덤으로 이름을 만들어준다.
-
-        String fileName = uuid + "_" + file.getOriginalFilename();
-
-        File saveFile = new File(projectPath, fileName);
-
-        file.transferTo(saveFile);
-
-        boardDto.setFilename(fileName);
-
-        boardDto.setFilepath("/files/" + fileName);
-
-        boardRepository.save(boardDto.toEntity()).getId();
-
-        /*
-        board.setFilename(fileName);
-
-        board.setFilepath("/files/" + fileName);
-
-        boardRepository.save(board);
-        */
+        boardRepository.save(boardDto.toEntity());
     }
 
     // 게시글 목록 불러오기
@@ -66,18 +40,11 @@ public class BoardService {
     // 게시글 상세 페이지
     public BoardDto boardView(Integer id){
 
-        Board board = boardRepository.findById(id).get();
+        BoardEntity boardEntity = boardRepository.findById(id).get();
 
-        BoardDto boardDto = new BoardDto(board);
+        BoardDto boardDto = new BoardDto(boardEntity);
 
         return boardDto;
-
-        /*
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException());
-        return new BoardDto(board);
-        */
-
     }
 
     // 특정 게시글 삭제
@@ -85,4 +52,6 @@ public class BoardService {
 
         boardRepository.deleteById(id);
     }
+
+
 }

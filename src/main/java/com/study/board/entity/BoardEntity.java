@@ -1,20 +1,22 @@
 package com.study.board.entity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "board")
 @EntityListeners(AuditingEntityListener.class)
-public class Board {
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+public class BoardEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +25,6 @@ public class Board {
     private String title;
 
     private String content;
-
-    private String filename;
-
-    private String filepath;
 
     @CreatedDate
     @Column(name = "createdTime", updatable = false)
@@ -37,18 +35,20 @@ public class Board {
     private LocalDateTime updatedTime;
 
     @Builder
-    public Board(Integer id, String title, String content, String filename, String filepath,
-                 LocalDateTime createdTime, LocalDateTime updatedTime) {
+    public BoardEntity(Integer id, String title, String content,
+                       LocalDateTime createdTime, LocalDateTime updatedTime) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.filename = filename;
-        this.filepath = filepath;
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
     }
 
-    public Board() {
+    @OneToMany(mappedBy = "boardEntity")
+    private List<FileEntity> fileEntities = new ArrayList<FileEntity>();
 
+    public void add(FileEntity fileEntity) {
+        fileEntity.setBoardEntity(this);
+        this.fileEntities.add(fileEntity);
     }
 }
