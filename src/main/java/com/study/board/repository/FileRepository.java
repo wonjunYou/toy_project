@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface FileRepository extends JpaRepository<FileEntity, Integer> {
-    List<FileEntity> findAllByBoardEntity (Integer boardId);
+    List<FileEntity> findByBoardEntityId (int boardEntity_id);
 }
