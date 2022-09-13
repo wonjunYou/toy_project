@@ -62,7 +62,6 @@ public class BoardController {
         return "message";
     }
 
-
     @GetMapping("/board")
     public String getBoardList(Model model, @PageableDefault(page = 0, size = 10, sort ="id", direction = Sort.Direction.DESC)
                                Pageable pageable, String searchKeyword){
@@ -96,10 +95,10 @@ public class BoardController {
     }
 
     @GetMapping("/board/view") // localhost:8080/board/view?id=1 get방식으로 인자 전달.
-    public String boardView(Model model, Integer id){
+    public String boardView(Model model, Integer id) {
         BoardDto boardDto = boardService.boardView(id);
 
-        List<FileEntity> files = fileRepository.findAll();
+        List<FileEntity> files = fileRepository.findByBoardEntityId(id);
 
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("all", files);
