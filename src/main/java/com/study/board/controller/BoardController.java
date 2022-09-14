@@ -46,14 +46,12 @@ public class BoardController {
 
     @PostMapping("/board/write")
     public String boardWrite(BoardDto boardDto, Model model,
-                             @RequestParam("files") List<MultipartFile> files, BoardEntity boardEntity) throws Exception {
+                             @RequestParam("files") List<MultipartFile> files) throws Exception {
 
-        if (files.isEmpty()){
-            boardService.savePost(boardDto);
-        } else {
-            for (MultipartFile multipartFile : files) {
-                fileService.saveFile(multipartFile, boardEntity);
-            }
+        BoardEntity boardEntity = boardService.savePost(boardDto);
+
+        for (MultipartFile multipartFile : files) {
+            fileService.saveFile(multipartFile, boardEntity);
         }
 
         model.addAttribute("message", "글 작성이 완료되었습니다.");

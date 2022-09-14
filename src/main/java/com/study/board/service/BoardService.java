@@ -21,9 +21,9 @@ public class BoardService {
     private final BoardRepository boardRepository;
         //글 작성
     @Transactional
-    public void savePost(BoardDto boardDto) throws Exception {
+    public BoardEntity savePost(BoardDto boardDto) throws Exception {
 
-        boardRepository.save(boardDto.toEntity());
+        return boardRepository.save(boardDto.toEntity());
     }
 
     // 게시글 목록 불러오기
