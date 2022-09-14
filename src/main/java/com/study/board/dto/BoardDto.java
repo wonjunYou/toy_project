@@ -1,6 +1,7 @@
 package com.study.board.dto;
 
 import com.study.board.entity.BoardEntity;
+import com.study.board.entity.FileEntity;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
