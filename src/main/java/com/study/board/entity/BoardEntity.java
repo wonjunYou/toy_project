@@ -34,15 +34,6 @@ public class BoardEntity {
     @Column(name = "updatedTime", updatable = false)
     private LocalDateTime updatedTime;
 
-    @Builder
-    public BoardEntity(Integer id, String title, String content,
-                       LocalDateTime createdTime, LocalDateTime updatedTime) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
-    }
 
     @OneToMany(mappedBy = "boardEntity")
     private List<FileEntity> fileEntities = new ArrayList<FileEntity>();
