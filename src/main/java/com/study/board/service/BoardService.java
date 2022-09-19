@@ -1,29 +1,32 @@
 package com.study.board.service;
 
+import com.study.board.common.BeanConfiguration;
 import com.study.board.dto.BoardDto;
 import com.study.board.entity.BoardEntity;
 import com.study.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
         //글 작성
     @Transactional
-    public BoardEntity savePost(BoardDto boardDto) throws Exception {
+    public BoardEntity savePost(BoardDto boardDto) {
 
-        return boardRepository.save(boardDto.toEntity());
+        BoardEntity boardEntity = modelMapper.map(boardDto, BoardEntity.class);
+
+        return boardRepository.save(boardEntity);
     }
 
     // 게시글 목록 불러오기

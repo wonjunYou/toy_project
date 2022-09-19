@@ -1,6 +1,7 @@
 package com.study.board.controller;
 
 import com.study.board.dto.BoardDto;
+import com.study.board.dto.FileDto;
 import com.study.board.entity.BoardEntity;
 import com.study.board.entity.FileEntity;
 import com.study.board.repository.FileRepository;
@@ -27,7 +28,6 @@ import org.springframework.web.util.UriUtils;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -96,7 +96,8 @@ public class BoardController {
     public String boardView(Model model, Integer id) {
         BoardDto boardDto = boardService.boardView(id);
 
-        List<FileEntity> files = fileRepository.findByBoardEntityId(id);
+        List<FileDto> files = fileService.getFiles(id);
+
 
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("all", files);
@@ -114,9 +115,9 @@ public class BoardController {
 
     @PutMapping("/board/modify/{id}")
     public String boardUpdate(BoardDto boardDto,
-                              @RequestParam("files") List<MultipartFile> files, BoardEntity boardEntity) throws Exception{
+                              @RequestParam("files") List<MultipartFile> files, Model model) throws Exception{
 
-        boardService.savePost(boardDto);
+        BoardEntity boardEntity = boardService.savePost(boardDto);
 
         for (MultipartFile multipartFile : files) {
             fileService.saveFile(multipartFile, boardEntity);
