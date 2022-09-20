@@ -95,6 +95,7 @@ public class BoardController {
     @GetMapping("/board/view") // localhost:8080/board/view?id=1 get방식으로 인자 전달.
     public String boardView(Model model, Integer id) {
         BoardDto boardDto = boardService.boardView(id);
+        boardDto.setViewCnt(boardService.updateCount(id));
 
         List<FileDto> files = fileService.getFiles(id);
 

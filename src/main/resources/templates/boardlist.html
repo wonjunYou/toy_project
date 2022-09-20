@@ -31,6 +31,7 @@
                     <th>글번호</th>
                     <th>제목</th>
                     <th class="time-column">등록 시간</th>
+                    <th>조회수</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,6 +43,7 @@
                     <td class="time-column">
                         <span th:text="${#temporals.format(board.updatedTime, 'yy-MM-dd HH:mm')}"></span>
                     </td>
+                    <td th:text="${board.viewCnt}" style="text-align: center"></td>
                 </tr>
             </tbody>
         </table>

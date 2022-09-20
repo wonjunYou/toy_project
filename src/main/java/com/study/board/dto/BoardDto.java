@@ -3,6 +3,7 @@ package com.study.board.dto;
 import com.study.board.entity.BoardEntity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -28,6 +29,9 @@ public class BoardDto {
 
     private LocalDateTime updatedTime;
 
+    @Column(nullable = false, columnDefinition = "INT(11) default 0")
+    private Integer viewCnt;
+
 
     @Builder
     public BoardDto(BoardEntity boardEntity) {
@@ -36,6 +40,7 @@ public class BoardDto {
         this.content = boardEntity.getContent();
         this.createdTime = boardEntity.getCreatedTime();
         this.updatedTime = boardEntity.getUpdatedTime();
+        this.viewCnt = boardEntity.getViewCnt();
     }
 
 }

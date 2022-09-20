@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
@@ -33,6 +34,9 @@ public class BoardEntity {
     @LastModifiedDate
     @Column(name = "updatedTime", updatable = false)
     private LocalDateTime updatedTime;
+
+    @Column(name = "viewCnt", columnDefinition = "INT(11) default 0")
+    private Integer viewCnt;
 
 
     @OneToMany(mappedBy = "boardEntity")
